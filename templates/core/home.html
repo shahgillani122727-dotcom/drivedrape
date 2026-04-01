@@ -1,5 +1,5 @@
-{% extends 'base.html' %}
 {% load static %}
+{% extends 'base.html' %}
 {% block title %}Drive Drape — Grounded In Design | Premium Car Mats Pakistan{% endblock %}
 
 {% block extra_css %}
@@ -214,14 +214,10 @@
   <div class="container">
     <div class="about-grid">
 
-      <!-- X FACTOR LOGO — exact brand guideline -->
+      <!-- X FACTOR IMAGE -->
       <div class="about-vis reveal">
-        <svg width="200" height="260" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
-          <!-- V upar — KALA -->
-          <polygon points="0,0 35,0 100,120 165,0 200,0 100,150" fill="#111111"/>
-          <!-- Ulta V neeche — LAAL -->
-          <polygon points="0,260 35,260 100,140 165,260 200,260 100,110" fill="#EC2227"/>
-        </svg>
+        <img src="{% static 'x_factor.png' %}" alt="The X Factor" 
+             style="width:220px;height:auto;object-fit:contain;filter:brightness(1.8) contrast(1.2)"/>
         <span class="x-label">The X Factor</span>
       </div>
 
