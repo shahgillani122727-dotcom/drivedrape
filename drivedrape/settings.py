@@ -8,6 +8,7 @@ SECRET_KEY = 'django-insecure-change-this-in-production-use-env-variable'
 DEBUG = True  # Set to False in production
 
 ALLOWED_HOSTS = ['*']  # Update with your domain in production
+CSRF_TRUSTED_ORIGINS = ['https://drivedrape-production.up.railway.app']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
