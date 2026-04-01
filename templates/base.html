@@ -208,7 +208,7 @@
 <!-- NAVBAR -->
 <nav id="navbar">
   <a href="{% url 'core:home' %}" class="nav-logo">
-    <img src="{% static 'logo.jpeg' %}" alt="Drive Drape"/>
+    <img src="{% static 'logo_transparent.png' %}" alt="Drive Drape"/>
   </a>
   <ul class="nav-links">
     <li><a href="{% url 'core:home' %}" class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a></li>
@@ -266,7 +266,7 @@
   <div class="container">
     <div class="footer-top">
       <div class="footer-brand">
-        <img src="{% static 'logo.jpeg' %}" alt="Drive Drape"/>
+        <img src="{% static 'logo_transparent.png' %}" alt="Drive Drape"/>
         <p>Premium car mats & accessories for car lovers who believe every detail matters.</p>
         <div class="footer-social">
           <a href="https://www.instagram.com/drivedrape?igsh=ZHJidDNhMWU1MzI4" target="_blank" aria-label="Instagram">
