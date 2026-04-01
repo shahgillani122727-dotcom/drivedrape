@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block title %}Login — Drive Drape{% endblock %}
+
+{% block extra_css %}
+<style>
+.auth-page{min-height:80vh;display:flex;align-items:center;justify-content:center;padding:48px 0}
+.auth-card{width:100%;max-width:460px;background:var(--card);border:1px solid var(--grey);padding:40px;position:relative;overflow:hidden}
+.auth-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--red)}
+.auth-logo{text-align:center;margin-bottom:28px}
+.auth-logo .d1{font-family:'Orbitron',sans-serif;font-weight:700;font-size:13px;letter-spacing:5px;color:var(--white)}
+.auth-logo .d2{font-family:'Orbitron',sans-serif;font-weight:900;font-size:18px;letter-spacing:5px;color:var(--red)}
+.auth-title{font-family:'Orbitron',sans-serif;font-weight:700;font-size:20px;color:var(--white);margin-bottom:6px}
+.auth-sub{font-size:14px;font-weight:300;color:var(--lg);margin-bottom:28px}
+.fg{margin-bottom:16px}
+.fg label{display:block;font-family:'Rajdhani',sans-serif;font-weight:600;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--lg);margin-bottom:6px}
+.fg input{width:100%;background:var(--dark);border:1px solid var(--grey);color:var(--white);padding:12px 14px;font-family:'Barlow Condensed',sans-serif;font-size:15px;outline:none;transition:border-color .2s}
+.fg input:focus{border-color:var(--red)}
+.auth-footer{text-align:center;margin-top:20px;font-size:14px;color:var(--lg)}
+.auth-footer a{color:var(--red)}
+.divider-or{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--lg);font-size:12px}
+.divider-or::before,.divider-or::after{content:'';flex:1;height:1px;background:var(--grey)}
+.guest-btn{width:100%;padding:12px;background:transparent;border:1px solid var(--grey);color:var(--silver);font-family:'Rajdhani',sans-serif;font-weight:700;font-size:12px;letter-spacing:3px;text-transform:uppercase;transition:all .2s}
+.guest-btn:hover{border-color:var(--red);color:var(--white)}
+.error-msg{color:var(--red);font-size:13px;margin-top:4px;font-family:'Rajdhani',sans-serif}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+  <div class="auth-card reveal">
+    <div class="auth-logo">
+      <div class="d1">DRIVE</div>
+      <div class="d2">DRAPE</div>
+    </div>
+    <h2 class="auth-title">Welcome Back</h2>
+    <p class="auth-sub">Login to your account to track orders</p>
+
+    <form method="POST">
+      {% csrf_token %}
+      <div class="fg">
+        <label>Email Address</label>
+        <input type="email" name="email" required autofocus placeholder="your@email.com"/>
+      </div>
+      <div class="fg">
+        <label>Password</label>
+        <input type="password" name="password" required placeholder="••••••••"/>
+      </div>
+      {% if form.errors %}
+        <p class="error-msg">Invalid email or password. Please try again.</p>
+      {% endif %}
+      <button type="submit" class="btn btn-red btn-full" style="margin-top:8px">Login →</button>
+    </form>
+
+    <div class="divider-or">or</div>
+    <a href="{% url 'orders:checkout' %}" class="guest-btn">Continue as Guest — No Account Needed</a>
+
+    <div class="auth-footer">
+      Don't have an account? <a href="{% url 'accounts:register' %}">Register</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

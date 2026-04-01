@@ -1,0 +1,400 @@
+{% extends 'base.html' %}
+{% block title %}Drive Drape — Grounded In Design | Premium Car Mats Pakistan{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ── HERO ──────────────────────────────────────────── */
+.hero{
+  position:relative;min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;background:var(--black);
+}
+.hero-noise{
+  position:absolute;inset:0;opacity:.03;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-size:200px;
+}
+.hero-grid{
+  position:absolute;inset:0;opacity:.04;
+  background-image:linear-gradient(rgba(236,34,39,.6) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(236,34,39,.6) 1px,transparent 1px);
+  background-size:60px 60px;
+}
+.hero-glow{
+  position:absolute;right:-10%;top:10%;
+  width:600px;height:600px;border-radius:50%;
+  background:radial-gradient(circle,rgba(236,34,39,.12) 0%,transparent 65%);
+  pointer-events:none;
+}
+.hero-x{
+  position:absolute;right:5%;top:50%;transform:translateY(-50%);
+  width:42vw;max-width:520px;opacity:.06;pointer-events:none;
+}
+.hx-v{
+  width:100%;aspect-ratio:1;
+  clip-path:polygon(38% 0%,62% 0%,100% 100%,75% 100%,50% 42%,25% 100%,0% 100%);
+  background:var(--white);
+}
+.hx-a{
+  width:58%;margin:-5% auto 0;aspect-ratio:1.8;
+  clip-path:polygon(18% 0%,82% 0%,100% 100%,0% 100%);
+  background:var(--red);
+}
+.hero-line{
+  position:absolute;left:0;top:0;bottom:0;width:4px;
+  background:linear-gradient(to bottom,transparent,var(--red) 40%,var(--red) 60%,transparent);
+}
+.hero-content{
+  position:relative;z-index:2;padding:0 20px;
+  max-width:680px;
+}
+.hero-eye{
+  font-family:'Rajdhani',sans-serif;font-weight:600;
+  font-size:12px;letter-spacing:7px;text-transform:uppercase;color:var(--red);
+  margin-bottom:18px;display:flex;align-items:center;gap:12px;
+  animation:hfade .8s ease both;
+}
+.hero-eye::before{content:'';width:30px;height:1px;background:var(--red)}
+.hero-h1{
+  font-family:'Orbitron',sans-serif;font-weight:900;
+  font-size:clamp(64px,11vw,130px);line-height:.88;
+  animation:hfade .8s .1s ease both;
+}
+.hero-h1 .w1{color:var(--white);display:block}
+.hero-h1 .w2{color:var(--red);display:block}
+.hero-rule{
+  width:90px;height:3px;
+  background:linear-gradient(to right,var(--red),transparent);
+  margin:24px 0;
+  animation:hfade .8s .2s ease both;
+}
+.hero-sub{
+  font-size:16px;font-weight:300;letter-spacing:5px;
+  color:var(--silver);text-transform:uppercase;
+  animation:hfade .8s .3s ease both;
+}
+.hero-btns{
+  display:flex;gap:14px;flex-wrap:wrap;margin-top:40px;
+  animation:hfade .8s .4s ease both;
+}
+.hero-scroll{
+  position:absolute;bottom:28px;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  animation:hfade .8s .7s ease both;
+}
+.hero-scroll span{font-family:'Rajdhani',sans-serif;font-size:10px;letter-spacing:4px;color:var(--lg);text-transform:uppercase}
+.scroll-bar{width:1px;height:36px;background:linear-gradient(to bottom,var(--red),transparent);animation:spulse 1.6s ease-in-out infinite}
+
+@keyframes hfade{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spulse{0%,100%{opacity:.3}50%{opacity:1}}
+
+/* ── STATS ─────────────────────────────────────────── */
+.stats{background:var(--red);padding:22px 0}
+.stats-inner{display:flex;justify-content:space-around;flex-wrap:wrap;gap:16px}
+.stat-n{font-family:'Orbitron',sans-serif;font-weight:900;font-size:28px;color:#fff}
+.stat-l{font-family:'Rajdhani',sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.75)}
+
+/* ── FEATURED PRODUCTS ──────────────────────────────── */
+.products-section{padding:80px 0;background:var(--dark)}
+.sec-head{text-align:center;margin-bottom:56px}
+.sec-head .divider{margin-left:auto;margin-right:auto}
+
+.cat-tabs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:44px}
+.cat-tab{
+  padding:8px 22px;border:1px solid var(--grey);
+  font-family:'Rajdhani',sans-serif;font-weight:600;
+  font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--lg);
+  transition:all .2s;background:none;
+}
+.cat-tab:hover,.cat-tab.active{border-color:var(--red);color:var(--white);background:rgba(236,34,39,.08)}
+
+.prod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px}
+
+.prod-card{
+  background:var(--card);border:1px solid var(--grey);
+  position:relative;overflow:hidden;
+  transition:transform .3s,border-color .3s;
+}
+.prod-card:hover{transform:translateY(-6px);border-color:rgba(236,34,39,.5)}
+.prod-card::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:var(--red);transform:scaleX(0);transform-origin:left;transition:transform .3s;
+}
+.prod-card:hover::after{transform:scaleX(1)}
+
+.prod-badge{
+  position:absolute;top:10px;left:10px;z-index:1;
+  background:var(--red);color:#fff;
+  font-family:'Rajdhani',sans-serif;font-weight:700;
+  font-size:10px;letter-spacing:2px;padding:3px 10px;text-transform:uppercase;
+}
+.prod-badge.sale{background:#22c55e}
+
+.prod-img{
+  aspect-ratio:4/3;background:var(--grey);
+  display:flex;align-items:center;justify-content:center;
+  font-size:70px;overflow:hidden;position:relative;
+}
+.prod-img img{width:100%;height:100%;object-fit:cover;transition:transform .4s}
+.prod-card:hover .prod-img img{transform:scale(1.05)}
+.prod-img .emoji-ph{opacity:.15;transition:transform .3s}
+.prod-card:hover .emoji-ph{transform:scale(1.1)}
+
+.prod-body{padding:18px}
+.prod-cat{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--red);margin-bottom:5px}
+.prod-name{font-family:'Orbitron',sans-serif;font-weight:700;font-size:14px;color:var(--white);margin-bottom:6px;line-height:1.3}
+.prod-desc{font-size:13px;font-weight:300;color:var(--lg);margin-bottom:16px;line-height:1.5}
+.prod-stars{color:#f59e0b;font-size:12px;margin-bottom:12px;display:flex;align-items:center;gap:4px}
+.prod-stars span{color:var(--lg);font-size:11px}
+.prod-foot{display:flex;align-items:center;justify-content:space-between}
+.prod-price{font-family:'Orbitron',sans-serif;font-weight:700;font-size:18px;color:var(--white)}
+.prod-price del{font-size:12px;color:var(--lg);font-family:'Barlow Condensed',sans-serif;margin-left:6px}
+.add-btn{
+  background:var(--red);color:#fff;
+  padding:9px 18px;
+  font-family:'Rajdhani',sans-serif;font-weight:700;
+  font-size:11px;letter-spacing:2px;text-transform:uppercase;
+  clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);
+  transition:background .2s,transform .15s;
+}
+.add-btn:hover{background:var(--red2);transform:scale(1.04)}
+.add-btn:active{transform:scale(.97)}
+
+/* ── ABOUT STRIP ────────────────────────────────────── */
+.about-strip{
+  padding:80px 0;background:var(--black);
+  position:relative;overflow:hidden;
+}
+.about-strip::before{
+  content:'DRIVE DRAPE';
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  font-family:'Orbitron',sans-serif;font-weight:900;
+  font-size:clamp(80px,14vw,180px);color:rgba(255,255,255,.02);
+  white-space:nowrap;pointer-events:none;
+}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.about-vis{
+  background:var(--card);border:1px solid var(--grey);
+  padding:40px;position:relative;overflow:hidden;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:300px;
+}
+.about-vis::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--red)}
+.x-big{
+  width:180px;height:180px;position:relative;margin-bottom:16px;
+}
+.x-bar{position:absolute;width:100%;height:28px;top:50%;background:rgba(255,255,255,.06);border-radius:3px}
+.x-bar:first-child{transform:translateY(-50%) rotate(45deg)}
+.x-bar:last-child{transform:translateY(-50%) rotate(-45deg)}
+.x-tri{
+  position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);
+  width:0;height:0;
+  border-left:60px solid transparent;border-right:60px solid transparent;
+  border-bottom:90px solid rgba(236,34,39,.5);
+}
+.x-label{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:12px;letter-spacing:5px;text-transform:uppercase;color:var(--lg)}
+
+.about-txt p{font-size:15px;font-weight:300;color:var(--silver);line-height:1.8;margin-bottom:16px}
+.about-txt p strong{color:var(--white);font-weight:600}
+.pillars{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:24px 0 32px}
+.pillar{padding:14px;border:1px solid var(--grey);border-left:3px solid var(--red)}
+.pillar-t{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--red);margin-bottom:3px}
+.pillar-d{font-size:12px;font-weight:300;color:var(--lg)}
+
+/* ── INSTAGRAM CTA ──────────────────────────────────── */
+.ig-strip{
+  padding:60px 0;background:var(--red);text-align:center;
+  position:relative;overflow:hidden;
+}
+.ig-strip::before{
+  content:'';position:absolute;inset:0;opacity:.06;
+  background-image:repeating-linear-gradient(45deg,#fff 0,#fff 1px,transparent 0,transparent 50%);
+  background-size:14px 14px;
+}
+.ig-strip h2{
+  font-family:'Orbitron',sans-serif;font-weight:900;
+  font-size:clamp(24px,4vw,48px);color:#fff;margin-bottom:12px;
+}
+.ig-strip p{font-size:16px;font-weight:300;letter-spacing:3px;color:rgba(255,255,255,.85);text-transform:uppercase;margin-bottom:32px}
+.ig-strip .btn{background:#fff;color:var(--red);clip-path:none;border-radius:2px}
+.ig-strip .btn:hover{background:rgba(255,255,255,.9)}
+
+/* ── RESPONSIVE ─────────────────────────────────────── */
+@media(max-width:768px){
+  .about-grid{grid-template-columns:1fr}
+  .pillars{grid-template-columns:1fr}
+  .hero-h1{font-size:clamp(52px,16vw,80px)}
+  .hero-x{display:none}
+}
+@media(max-width:480px){
+  .hero-btns{flex-direction:column}
+  .hero-btns .btn{width:100%;justify-content:center}
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-noise"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-x"><div class="hx-v"></div><div class="hx-a"></div></div>
+  <div class="hero-line"></div>
+
+  <div class="hero-content">
+    <p class="hero-eye">Premium Car Mats &amp; Accessories — Pakistan</p>
+    <h1 class="hero-h1">
+      <span class="w1">DRIVE</span>
+      <span class="w2">DRAPE</span>
+    </h1>
+    <div class="hero-rule"></div>
+    <p class="hero-sub">Grounded In Design</p>
+    <div class="hero-btns">
+      <a href="{% url 'products:shop' %}" class="btn btn-red">Shop Now →</a>
+      <a href="#about" class="btn btn-outline">Our Story</a>
+    </div>
+  </div>
+
+  <div class="hero-scroll">
+    <span>Scroll</span>
+    <div class="scroll-bar"></div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stats-inner container">
+    <div class="stat"><div class="stat-n">500+</div><div class="stat-l">Products</div></div>
+    <div class="stat"><div class="stat-n">10K+</div><div class="stat-l">Happy Customers</div></div>
+    <div class="stat"><div class="stat-n">100%</div><div class="stat-l">Anti-Skid Backed</div></div>
+    <div class="stat"><div class="stat-n">COD</div><div class="stat-l">Cash on Delivery</div></div>
+    <div class="stat"><div class="stat-n">48H</div><div class="stat-l">Fast Delivery</div></div>
+  </div>
+</div>
+
+<!-- FEATURED PRODUCTS -->
+<section class="products-section">
+  <div class="container">
+    <div class="sec-head reveal">
+      <span class="tag">Our Collection</span>
+      <h2 class="heading">Featured <span>Products</span></h2>
+      <div class="divider center"></div>
+    </div>
+
+    <div class="cat-tabs reveal">
+      <button class="cat-tab active" data-filter="all">All</button>
+      {% for cat in categories %}
+        <button class="cat-tab" data-filter="{{ cat.slug }}">{{ cat.name }}</button>
+      {% endfor %}
+    </div>
+
+    <div class="prod-grid">
+      {% for product in featured_products %}
+      <div class="prod-card reveal reveal-d{{ forloop.counter }}" data-cat="{{ product.category.slug }}">
+        {% if product.is_bestseller %}<span class="prod-badge">Best Seller</span>{% endif %}
+        {% if product.is_on_sale %}<span class="prod-badge sale">-{{ product.discount_percent }}%</span>{% endif %}
+
+        <a href="{% url 'products:detail' product.slug %}">
+          <div class="prod-img">
+            {% if product.main_image %}
+              <img src="{{ product.main_image.image.url }}" alt="{{ product.name }}"/>
+            {% else %}
+              <span class="emoji-ph">🚗</span>
+            {% endif %}
+          </div>
+        </a>
+
+        <div class="prod-body">
+          <p class="prod-cat">{{ product.category.name }}</p>
+          <a href="{% url 'products:detail' product.slug %}">
+            <h3 class="prod-name">{{ product.name }}</h3>
+          </a>
+          <p class="prod-desc">{{ product.description|truncatewords:12 }}</p>
+          {% if product.avg_rating > 0 %}
+          <div class="prod-stars">
+            {% for i in "12345" %}
+              {% if forloop.counter <= product.avg_rating %}⭐{% else %}☆{% endif %}
+            {% endfor %}
+            <span>({{ product.review_count }})</span>
+          </div>
+          {% endif %}
+          <div class="prod-foot">
+            <div class="prod-price">
+              Rs.{{ product.current_price }}
+              {% if product.is_on_sale %}<del>Rs.{{ product.price }}</del>{% endif %}
+            </div>
+            <form method="POST" action="{% url 'cart:add' product.id %}" style="display:inline">
+              {% csrf_token %}
+              <input type="hidden" name="quantity" value="1"/>
+              <button type="submit" class="add-btn">Add +</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+        <p style="color:var(--lg);grid-column:1/-1;text-align:center">No products yet. Add them via Admin panel.</p>
+      {% endfor %}
+    </div>
+
+    <div style="text-align:center;margin-top:48px" class="reveal">
+      <a href="{% url 'products:shop' %}" class="btn btn-outline">View All Products →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT STRIP -->
+<section class="about-strip" id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-vis reveal">
+        <svg width="200" height="260" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+  <polygon points="0,0 35,0 100,120 165,0 200,0 100,150" fill="#111111"/>
+  <polygon points="0,260 35,260 100,140 165,260 200,260 100,110" fill="#EC2227"/>
+</svg>
+<span class="x-label">The X Factor</span>
+      </div>
+      <div class="about-txt reveal reveal-d1">
+        <span class="tag">Our Brand</span>
+        <h2 class="heading">Who We <span>Are</span></h2>
+        <div class="divider"></div>
+        <p><strong>Drive Drape</strong> is an online-based car mats and accessories brand designed for car enthusiast who believe every detail matters.</p>
+        <p>"Drive" represents <strong>passion, movement, and car culture</strong> — "Drape" symbolizes coverage, protection, and style.</p>
+        <div class="pillars">
+          <div class="pillar"><div class="pillar-t">Quality</div><div class="pillar-d">Anti-skid, odorless premium materials</div></div>
+          <div class="pillar"><div class="pillar-t">Design</div><div class="pillar-d">Every detail is intentional</div></div>
+          <div class="pillar"><div class="pillar-t">Durability</div><div class="pillar-d">Built for every road, every season</div></div>
+          <div class="pillar"><div class="pillar-t">Style</div><div class="pillar-d">Dress your car with attitude</div></div>
+        </div>
+        <a href="{% url 'core:about' %}" class="btn btn-red">Read Our Story →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INSTAGRAM CTA -->
+<section class="ig-strip">
+  <div class="container" style="position:relative;z-index:1">
+    <h2>Saw Us On Instagram?</h2>
+    <p>Your car deserves Drive Drape — order in 60 seconds</p>
+    <a href="{% url 'products:shop' %}" class="btn btn-red">Order Now — COD Available</a>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Category filter tabs
+  document.querySelectorAll('.cat-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const filter = tab.dataset.filter;
+      document.querySelectorAll('.prod-card').forEach(card => {
+        card.style.display = (filter === 'all' || card.dataset.cat === filter) ? '' : 'none';
+      });
+    });
+  });
+</script>
+{% endblock %}

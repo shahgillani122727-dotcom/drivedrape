@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}About Us — Drive Drape{% endblock %}
+{% block content %}
+<div style="padding:60px 0">
+  <div class="container">
+    <span class="tag">Our Story</span>
+    <h1 class="heading">About <span>Drive Drape</span></h1>
+    <div class="divider"></div>
+    <div style="max-width:700px">
+      <p style="font-size:16px;font-weight:300;color:var(--silver);line-height:1.9;margin-bottom:20px">
+        Drive Drape is an online-based car mats and accessories brand designed for car lovers who believe every detail matters.
+        The name combines <strong style="color:var(--white)">"Drive"</strong> — representing passion, movement, and car culture —
+        with <strong style="color:var(--white)">"Drape"</strong> — symbolizing coverage, protection, and style.
+      </p>
+      <p style="font-size:16px;font-weight:300;color:var(--silver);line-height:1.9;margin-bottom:32px">
+        Drive Drape is not just about selling car mats; it is about <strong style="color:var(--white)">enhancing the driving experience</strong>
+        through premium interior aesthetics. We focus on quality, durability, and modern design — providing accessories
+        that protect your vehicle while elevating its personality.
+      </p>
+      <a href="{% url 'products:shop' %}" class="btn btn-red">Shop Now →</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

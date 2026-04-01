@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% block title %}All Orders — Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+.orders-wrap { padding: 40px 0; }
+.page-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:32px; flex-wrap:wrap; gap:12px; }
+.filter-bar { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:24px; }
+.filter-btn { padding:7px 18px; border:1px solid var(--grey); background:none; font-family:'Rajdhani',sans-serif; font-weight:700; font-size:11px; letter-spacing:3px; text-transform:uppercase; color:var(--lg); cursor:pointer; transition:all .2s; }
+.filter-btn:hover, .filter-btn.active { border-color:var(--red); color:var(--white); background:rgba(236,34,39,.08); }
+.orders-table { width:100%; border-collapse:collapse; }
+.orders-table th { font-family:'Rajdhani',sans-serif; font-weight:700; font-size:11px; letter-spacing:3px; text-transform:uppercase; color:var(--lg); padding:12px 16px; border-bottom:1px solid var(--grey); text-align:left; background:var(--card); }
+.orders-table td { padding:14px 16px; border-bottom:1px solid var(--grey); font-size:14px; color:var(--silver); vertical-align:middle; }
+.orders-table tr:hover td { background:rgba(236,34,39,.03); }
+.order-id { font-family:'Orbitron',sans-serif; font-weight:700; font-size:13px; color:var(--red); }
+.cust-name { font-weight:600; color:var(--white); }
+.amt { font-family:'Orbitron',sans-serif; font-weight:700; font-size:13px; color:var(--white); }
+.pill { font-family:'Rajdhani',sans-serif; font-weight:700; font-size:10px; letter-spacing:2px; text-transform:uppercase; padding:3px 10px; border:1px solid; }
+.pill-pending   { color:#f59e0b; border-color:#f59e0b; background:rgba(245,158,11,.08); }
+.pill-confirmed { color:#3b82f6; border-color:#3b82f6; background:rgba(59,130,246,.08); }
+.pill-packed    { color:#8b5cf6; border-color:#8b5cf6; background:rgba(139,92,246,.08); }
+.pill-shipped   { color:#06b6d4; border-color:#06b6d4; background:rgba(6,182,212,.08); }
+.pill-delivered { color:#22c55e; border-color:#22c55e; background:rgba(34,197,94,.08); }
+.pill-cancelled { color:var(--red); border-color:var(--red); background:rgba(236,34,39,.08); }
+.status-form select { background:var(--dark); border:1px solid var(--grey); color:var(--white); padding:5px 8px; font-family:'Rajdhani',sans-serif; font-size:12px; outline:none; }
+.status-form select:focus { border-color:var(--red); }
+.status-form button { background:var(--red); color:#fff; border:none; padding:5px 10px; font-family:'Rajdhani',sans-serif; font-weight:700; font-size:10px; letter-spacing:2px; cursor:pointer; }
+.wa-btn { background:#25d366; color:#fff; border:none; padding:5px 10px; font-family:'Rajdhani',sans-serif; font-weight:700; font-size:10px; letter-spacing:2px; cursor:pointer; transition:background .2s; text-decoration:none; display:inline-block; }
+.wa-btn:hover { background:#1ebe5d; }
+@media(max-width:768px) { .orders-table { display:block; overflow-x:auto; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="orders-wrap">
+  <div class="container">
+    <div class="page-head reveal">
+      <h1 class="heading">All <span>Orders</span></h1>
+      <a href="{% url 'dashboard:home' %}" class="btn btn-outline">← Dashboard</a>
+    </div>
+
+    <!-- Filter Tabs -->
+    <div class="filter-bar reveal">
+      <a href="?" class="filter-btn {% if not request.GET.status %}active{% endif %}">All ({{ total_count }})</a>
+      <a href="?status=pending"   class="filter-btn {% if request.GET.status == 'pending'   %}active{% endif %}">⏳ Pending</a>
+      <a href="?status=confirmed" class="filter-btn {% if request.GET.status == 'confirmed' %}active{% endif %}">✅ Confirmed</a>
+      <a href="?status=packed"    class="filter-btn {% if request.GET.status == 'packed'    %}active{% endif %}">📦 Packed</a>
+      <a href="?status=shipped"   class="filter-btn {% if request.GET.status == 'shipped'   %}active{% endif %}">🚚 Shipped</a>
+      <a href="?status=delivered" class="filter-btn {% if request.GET.status == 'delivered' %}active{% endif %}">🎉 Delivered</a>
+    </div>
+
+    <!-- Orders Table -->
+    <div style="background:var(--card);border:1px solid var(--grey);overflow:hidden" class="reveal">
+      <table class="orders-table">
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Customer</th>
+            <th>City</th>
+            <th>Payment</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Update</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for order in orders %}
+          <tr>
+            <td><span class="order-id">#{{ order.order_id }}</span><br/><span style="font-size:11px;color:var(--lg)">{{ order.created_at|date:"d M, g:i A" }}</span></td>
+            <td><div class="cust-name">{{ order.full_name }}</div><div style="font-size:12px;color:var(--lg)">{{ order.phone }}</div></td>
+            <td>{{ order.get_city_display }}</td>
+            <td><span style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:12px;letter-spacing:1px">{{ order.get_payment_method_display }}</span></td>
+            <td><span class="amt">Rs.{{ order.total }}</span></td>
+            <td><span class="pill pill-{{ order.status }}">{{ order.get_status_display }}</span></td>
+            <td>
+              <form method="POST" action="{% url 'dashboard:update_status' order.order_id %}" class="status-form">
+                {% csrf_token %}
+                <select name="status">
+                  <option value="pending"   {% if order.status == 'pending'   %}selected{% endif %}>⏳ Pending</option>
+                  <option value="confirmed" {% if order.status == 'confirmed' %}selected{% endif %}>✅ Confirmed</option>
+                  <option value="packed"    {% if order.status == 'packed'    %}selected{% endif %}>📦 Packed</option>
+                  <option value="shipped"   {% if order.status == 'shipped'   %}selected{% endif %}>🚚 Shipped</option>
+                  <option value="delivered" {% if order.status == 'delivered' %}selected{% endif %}>🎉 Delivered</option>
+                  <option value="cancelled" {% if order.status == 'cancelled' %}selected{% endif %}>❌ Cancelled</option>
+                </select>
+                <button type="submit">✓</button>
+              </form>
+            </td>
+            <td>
+              <a href="https://wa.me/{{ order.phone }}?text=Assalam%20o%20Alaikum%20{{ order.full_name }}!%20Your%20Drive%20Drape%20order%20%23{{ order.order_id }}%20status%20update." target="_blank" class="wa-btn">💬 WA</a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="8" style="text-align:center;padding:40px;color:var(--lg)">No orders found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if orders.has_other_pages %}
+    <div style="display:flex;gap:6px;justify-content:center;margin-top:32px">
+      {% if orders.has_previous %}<a href="?page={{ orders.previous_page_number }}" class="btn btn-outline" style="padding:8px 16px">‹</a>{% endif %}
+      {% for num in orders.paginator.page_range %}<a href="?page={{ num }}" class="btn {% if orders.number == num %}btn-red{% else %}btn-outline{% endif %}" style="padding:8px 16px">{{ num }}</a>{% endfor %}
+      {% if orders.has_next %}<a href="?page={{ orders.next_page_number }}" class="btn btn-outline" style="padding:8px 16px">›</a>{% endif %}
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block title %}My Orders — Drive Drape{% endblock %}
+
+{% block extra_css %}
+<style>
+.orders-page{padding:48px 0}
+.orders-title{font-family:'Orbitron',sans-serif;font-weight:900;font-size:28px;color:var(--white);margin-bottom:32px}
+.orders-title span{color:var(--red)}
+.order-card{background:var(--card);border:1px solid var(--grey);padding:22px;margin-bottom:16px;position:relative;transition:border-color .3s}
+.order-card:hover{border-color:rgba(236,34,39,.4)}
+.order-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--red)}
+.order-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+.order-id{font-family:'Orbitron',sans-serif;font-weight:700;font-size:16px;color:var(--red)}
+.order-date{font-size:13px;color:var(--lg)}
+.status-pill{padding:4px 14px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:11px;letter-spacing:3px;text-transform:uppercase;border:1px solid}
+.status-pending{color:#f59e0b;border-color:#f59e0b;background:rgba(245,158,11,.08)}
+.status-confirmed{color:#3b82f6;border-color:#3b82f6;background:rgba(59,130,246,.08)}
+.status-packed{color:#8b5cf6;border-color:#8b5cf6;background:rgba(139,92,246,.08)}
+.status-shipped{color:#06b6d4;border-color:#06b6d4;background:rgba(6,182,212,.08)}
+.status-delivered{color:#22c55e;border-color:#22c55e;background:rgba(34,197,94,.08)}
+.status-cancelled{color:var(--red);border-color:var(--red);background:rgba(236,34,39,.08)}
+.order-items-preview{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.oip-img{width:48px;height:48px;background:var(--grey);border:1px solid var(--grey);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:18px}
+.oip-img img{width:100%;height:100%;object-fit:cover}
+.order-footer{display:flex;justify-content:space-between;align-items:center;padding-top:14px;border-top:1px solid var(--grey);flex-wrap:wrap;gap:8px}
+.order-total{font-family:'Orbitron',sans-serif;font-weight:700;font-size:16px;color:var(--white)}
+.order-actions{display:flex;gap:8px}
+.order-action{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:11px;letter-spacing:2px;text-transform:uppercase;padding:7px 16px;border:1px solid var(--grey);color:var(--silver);transition:all .2s}
+.order-action:hover{border-color:var(--red);color:var(--red)}
+.empty-orders{text-align:center;padding:80px 0}
+.empty-orders .icon{font-size:60px;opacity:.15;margin-bottom:16px}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="orders-page">
+  <div class="container">
+    <h1 class="orders-title">My <span>Orders</span></h1>
+
+    {% if orders %}
+      {% for order in orders %}
+      <div class="order-card reveal">
+        <div class="order-top">
+          <div>
+            <div class="order-id">#{{ order.order_id }}</div>
+            <div class="order-date">{{ order.created_at|date:"d M Y, g:i A" }} — {{ order.items.count }} item{{ order.items.count|pluralize }}</div>
+          </div>
+          <span class="status-pill status-{{ order.status }}">{{ order.get_status_display }}</span>
+        </div>
+
+        <div class="order-items-preview">
+          {% for item in order.items.all|slice:":4" %}
+          <div class="oip-img">
+            {% if item.product and item.product.main_image %}
+              <img src="{{ item.product.main_image.image.url }}" alt=""/>
+            {% else %}🚗{% endif %}
+          </div>
+          {% endfor %}
+          {% if order.items.count > 4 %}
+            <div class="oip-img" style="color:var(--lg);font-size:13px;font-family:'Rajdhani',sans-serif;font-weight:700">+{{ order.items.count|add:"-4" }}</div>
+          {% endif %}
+        </div>
+
+        <div class="order-footer">
+          <div class="order-total">Rs.{{ order.total }}</div>
+          <div class="order-actions">
+            <a href="{% url 'orders:track' %}?order_id={{ order.order_id }}" class="order-action">Track Order</a>
+            <span class="order-action" style="color:var(--lg)">{{ order.get_payment_method_display }}</span>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+
+    {% else %}
+    <div class="empty-orders">
+      <div class="icon">📦</div>
+      <h2 style="font-family:'Orbitron',sans-serif;font-weight:700;font-size:22px;color:var(--white);margin-bottom:10px">No Orders Yet</h2>
+      <p style="font-size:15px;color:var(--lg);margin-bottom:28px">You haven't placed any orders yet.</p>
+      <a href="{% url 'products:shop' %}" class="btn btn-red">Start Shopping →</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

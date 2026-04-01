@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+{% block title %}Track Order — Drive Drape{% endblock %}
+
+{% block extra_css %}
+<style>
+.track-page{padding:60px 0}
+.track-search{max-width:520px;margin:0 auto 60px}
+.track-input-row{display:flex;gap:0;margin-top:20px}
+.track-input-row input{flex:1;background:var(--card);border:1px solid var(--grey);border-right:none;color:var(--white);padding:14px 18px;font-family:'Barlow Condensed',sans-serif;font-size:16px;outline:none;transition:border-color .2s}
+.track-input-row input:focus{border-color:var(--red)}
+.track-input-row button{background:var(--red);color:#fff;padding:14px 24px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;letter-spacing:3px;text-transform:uppercase;transition:background .2s}
+.track-input-row button:hover{background:var(--red2)}
+
+/* Timeline */
+.track-result{max-width:700px;margin:0 auto}
+.track-header{background:var(--card);border:1px solid var(--grey);padding:24px;margin-bottom:32px;position:relative}
+.track-header::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--red)}
+.track-order-id{font-family:'Orbitron',sans-serif;font-weight:900;font-size:22px;color:var(--red);margin-bottom:4px}
+.track-name{font-size:15px;font-weight:300;color:var(--silver)}
+.track-city{font-size:14px;color:var(--lg);margin-top:6px}
+
+/* Timeline steps */
+.timeline{position:relative;padding-left:48px}
+.timeline::before{content:'';position:absolute;left:15px;top:0;bottom:0;width:2px;background:var(--grey)}
+.tl-step{position:relative;padding-bottom:32px}
+.tl-step:last-child{padding-bottom:0}
+.tl-dot{
+  position:absolute;left:-41px;top:0;
+  width:28px;height:28px;border-radius:50%;
+  border:2px solid var(--grey);background:var(--dark);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;transition:all .4s;
+}
+.tl-step.done .tl-dot{border-color:var(--red);background:var(--red);color:#fff}
+.tl-step.active .tl-dot{border-color:var(--red);background:rgba(236,34,39,.15);color:var(--red);box-shadow:0 0 0 4px rgba(236,34,39,.15);animation:pulse 1.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 4px rgba(236,34,39,.1)}50%{box-shadow:0 0 0 8px rgba(236,34,39,.05)}}
+.tl-content{padding-left:12px}
+.tl-title{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:15px;letter-spacing:2px;text-transform:uppercase;color:var(--white);margin-bottom:2px}
+.tl-step.done .tl-title{color:var(--red)}
+.tl-step.pending-step .tl-title{color:var(--lg)}
+.tl-desc{font-size:13px;font-weight:300;color:var(--lg)}
+.tl-time{font-size:11px;color:rgba(255,255,255,.3);margin-top:2px;font-family:'Rajdhani',sans-serif;letter-spacing:2px}
+
+.track-items{margin-top:32px;background:var(--card);border:1px solid var(--grey);padding:20px}
+.track-items h4{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:12px;letter-spacing:4px;text-transform:uppercase;color:var(--lg);margin-bottom:14px}
+.ti-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:14px;color:var(--silver)}
+.ti-row:last-child{border:none}
+.ti-row strong{color:var(--white)}
+.ti-total{font-family:'Orbitron',sans-serif;font-weight:700;font-size:15px;color:var(--red)}
+
+.no-order{text-align:center;padding:40px 0;color:var(--lg)}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="track-page">
+  <div class="container">
+
+    <div style="text-align:center;margin-bottom:40px">
+      <span class="tag">Order Status</span>
+      <h1 class="heading">Track Your <span>Order</span></h1>
+      <div class="divider center"></div>
+    </div>
+
+    <!-- Search Form -->
+    <div class="track-search reveal">
+      <form method="GET">
+        <p style="font-size:14px;font-weight:300;color:var(--silver);text-align:center">Enter your Order ID to see real-time delivery status</p>
+        <div class="track-input-row">
+          <input type="text" name="order_id" placeholder="e.g. DD123456" value="{{ request.GET.order_id }}" required/>
+          <button type="submit">Track →</button>
+        </div>
+      </form>
+    </div>
+
+    {% if order %}
+    <div class="track-result reveal">
+      <!-- Order Header -->
+      <div class="track-header">
+        <div class="track-order-id">#{{ order.order_id }}</div>
+        <div class="track-name">{{ order.full_name }} — {{ order.phone }}</div>
+        <div class="track-city">📍 {{ order.get_city_display }}{% if order.province %}, {{ order.province }}{% endif %}</div>
+      </div>
+
+      <!-- Timeline -->
+      <div class="timeline">
+        {% for step in order.status_steps %}
+        <div class="tl-step {% if step.done %}done{% elif forloop.counter == 1 %}active{% else %}pending-step{% endif %}">
+          <div class="tl-dot">{% if step.done %}✓{% else %}○{% endif %}</div>
+          <div class="tl-content">
+            <div class="tl-title">{{ step.label }}</div>
+            <div class="tl-desc">
+              {% if step.key == 'pending' %}Order received and being reviewed{% endif %}
+              {% if step.key == 'confirmed' %}Order confirmed and being prepared{% endif %}
+              {% if step.key == 'packed' %}Items packed and ready for dispatch{% endif %}
+              {% if step.key == 'shipped' %}Order dispatched — on the way to you{% endif %}
+              {% if step.key == 'delivered' %}Delivered! Thank you for your order 🎉{% endif %}
+            </div>
+            {% if step.done and not forloop.last %}
+              <div class="tl-time">{{ order.updated_at|date:"d M Y, g:i A" }}</div>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      {% if order.tracking_code %}
+      <div style="margin-top:24px;background:var(--card);border:1px solid var(--grey);padding:16px;display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--lg);margin-bottom:4px">Courier Tracking Code</div>
+          <div style="font-family:'Orbitron',sans-serif;font-weight:700;font-size:18px;color:var(--white)">{{ order.tracking_code }}</div>
+        </div>
+        <span style="font-size:24px">📦</span>
+      </div>
+      {% endif %}
+
+      <!-- Items Summary -->
+      <div class="track-items">
+        <h4>Items in this Order</h4>
+        {% for item in order.items.all %}
+        <div class="ti-row">
+          <span>{{ item.product_name }} × {{ item.quantity }}</span>
+          <span><strong>Rs.{{ item.line_total }}</strong></span>
+        </div>
+        {% endfor %}
+        <div class="ti-row" style="margin-top:8px">
+          <span>Shipping</span><span>Rs.{{ order.shipping_cost }}</span>
+        </div>
+        <div class="ti-row">
+          <span>Total</span><span class="ti-total">Rs.{{ order.total }}</span>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;margin-top:24px;flex-wrap:wrap">
+        <a href="{{ whatsapp_link }}" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:#25d366;color:#fff;padding:12px 24px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:12px;letter-spacing:3px;text-transform:uppercase">💬 Contact on WhatsApp</a>
+        <a href="{% url 'products:shop' %}" class="btn btn-outline">Continue Shopping →</a>
+      </div>
+    </div>
+
+    {% elif request.GET.order_id %}
+    <div class="no-order reveal">
+      <div style="font-size:48px;opacity:.2;margin-bottom:16px">🔍</div>
+      <p style="font-size:16px">No order found with ID <strong style="color:var(--white)">#{{ request.GET.order_id }}</strong></p>
+      <p style="font-size:14px;margin-top:8px">Please check the order ID and try again, or <a href="{% url 'core:contact' %}" style="color:var(--red)">contact support</a>.</p>
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}

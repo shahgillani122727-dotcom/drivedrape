@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% block title %}All Products — Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+.prod-wrap { padding: 40px 0; }
+.page-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:32px; flex-wrap:wrap; gap:12px; }
+.prod-table { width:100%; border-collapse:collapse; }
+.prod-table th { font-family:'Rajdhani',sans-serif; font-weight:700; font-size:11px; letter-spacing:3px; text-transform:uppercase; color:var(--lg); padding:12px 16px; border-bottom:1px solid var(--grey); text-align:left; background:var(--card); }
+.prod-table td { padding:12px 16px; border-bottom:1px solid var(--grey); font-size:14px; color:var(--silver); vertical-align:middle; }
+.prod-table tr:hover td { background:rgba(236,34,39,.03); }
+.thumb { width:48px; height:48px; background:var(--grey); display:flex; align-items:center; justify-content:center; font-size:22px; overflow:hidden; }
+.thumb img { width:100%; height:100%; object-fit:cover; }
+.pname { font-family:'Orbitron',sans-serif; font-weight:700; font-size:12px; color:var(--white); }
+.pcat { font-family:'Rajdhani',sans-serif; font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--red); }
+.price { font-family:'Orbitron',sans-serif; font-weight:700; font-size:13px; color:var(--white); }
+.stock-ok { color:#22c55e; font-weight:700; }
+.stock-low { color:#f59e0b; font-weight:700; }
+.stock-out { color:var(--red); font-weight:700; }
+.badge-active { background:rgba(34,197,94,.1); color:#22c55e; border:1px solid #22c55e; font-family:'Rajdhani',sans-serif; font-weight:700; font-size:10px; letter-spacing:2px; padding:2px 8px; }
+.badge-inactive { background:rgba(236,34,39,.1); color:var(--red); border:1px solid var(--red); font-family:'Rajdhani',sans-serif; font-weight:700; font-size:10px; letter-spacing:2px; padding:2px 8px; }
+.act-btn { padding:5px 12px; font-family:'Rajdhani',sans-serif; font-weight:700; font-size:10px; letter-spacing:2px; text-transform:uppercase; border:1px solid var(--grey); color:var(--silver); text-decoration:none; transition:all .2s; display:inline-block; }
+.act-btn:hover { border-color:var(--red); color:var(--red); }
+.act-btn.del:hover { border-color:#ef4444; color:#ef4444; }
+@media(max-width:768px) { .prod-table { display:block; overflow-x:auto; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="prod-wrap">
+  <div class="container">
+    <div class="page-head reveal">
+      <h1 class="heading">All <span>Products</span></h1>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <a href="{% url 'dashboard:home' %}" class="btn btn-outline">← Dashboard</a>
+        <a href="{% url 'dashboard:home' %}#addProdForm" class="btn btn-red" onclick="sessionStorage.setItem('openAdd','1')">+ Add Product</a>
+      </div>
+    </div>
+
+    <div style="background:var(--card);border:1px solid var(--grey);overflow:hidden" class="reveal">
+      <table class="prod-table">
+        <thead>
+          <tr>
+            <th>Image</th>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>Status</th>
+            <th>Featured</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for product in products %}
+          <tr>
+            <td>
+              <div class="thumb">
+                {% if product.main_image %}<img src="{{ product.main_image.image.url }}" alt=""/>
+                {% else %}🚗{% endif %}
+              </div>
+            </td>
+            <td>
+              <div class="pname">{{ product.name }}</div>
+              <div class="pcat">{{ product.category.name }}</div>
+            </td>
+            <td>
+              <div class="price">Rs.{{ product.current_price }}</div>
+              {% if product.is_on_sale %}<div style="font-size:11px;color:var(--lg);text-decoration:line-through">Rs.{{ product.price }}</div>{% endif %}
+            </td>
+            <td>
+              <span class="{% if product.stock > 10 %}stock-ok{% elif product.stock > 0 %}stock-low{% else %}stock-out{% endif %}">
+                {{ product.stock }}
+              </span>
+            </td>
+            <td>
+              <span class="{% if product.is_active %}badge-active{% else %}badge-inactive{% endif %}">
+                {% if product.is_active %}Active{% else %}Inactive{% endif %}
+              </span>
+            </td>
+            <td>
+              {% if product.is_featured %}<span style="color:#f59e0b">⭐ Yes</span>{% else %}<span style="color:var(--lg)">No</span>{% endif %}
+            </td>
+            <td style="display:flex;gap:6px;flex-wrap:wrap">
+              <a href="{% url 'dashboard:edit_product' product.id %}" class="act-btn">Edit</a>
+              <a href="{% url 'products:detail' product.slug %}" class="act-btn" target="_blank">View</a>
+              <form method="POST" action="{% url 'dashboard:delete_product' product.id %}" style="display:inline" onsubmit="return confirm('Delete {{ product.name }}?')">
+                {% csrf_token %}
+                <button type="submit" class="act-btn del">Delete</button>
+              </form>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="7" style="text-align:center;padding:40px;color:var(--lg)">No products yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

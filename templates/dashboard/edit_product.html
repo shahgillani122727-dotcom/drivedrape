@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% block title %}Edit Product — Admin{% endblock %}
+{% block extra_css %}
+<style>
+.edit-wrap { padding: 40px 0; max-width: 800px; }
+.form-section { background:var(--card); border:1px solid var(--grey); padding:28px; margin-bottom:20px; position:relative; overflow:hidden; }
+.form-section::before { content:''; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--red); }
+.form-section h3 { font-family:'Rajdhani',sans-serif; font-weight:700; font-size:13px; letter-spacing:4px; text-transform:uppercase; color:var(--white); margin-bottom:20px; }
+.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.fg { margin-bottom:14px; }
+.fg label { display:block; font-family:'Rajdhani',sans-serif; font-weight:600; font-size:11px; letter-spacing:3px; text-transform:uppercase; color:var(--lg); margin-bottom:6px; }
+.fg input, .fg select, .fg textarea { width:100%; background:var(--dark); border:1px solid var(--grey); color:var(--white); padding:10px 14px; font-family:'Barlow Condensed',sans-serif; font-size:14px; outline:none; transition:border-color .2s; }
+.fg input:focus, .fg select:focus, .fg textarea:focus { border-color:var(--red); }
+.fg select option { background:var(--card); }
+.fg textarea { min-height:100px; resize:vertical; }
+.fg-check { display:flex; gap:20px; flex-wrap:wrap; }
+.fg-check label { display:flex; align-items:center; gap:8px; font-family:'Rajdhani',sans-serif; font-weight:600; font-size:12px; letter-spacing:2px; color:var(--silver); cursor:pointer; text-transform:uppercase; }
+.fg-check input[type=checkbox] { accent-color:var(--red); width:16px; height:16px; }
+.current-img { width:100px; height:100px; background:var(--grey); display:flex; align-items:center; justify-content:center; font-size:40px; overflow:hidden; margin-bottom:10px; border:1px solid var(--grey); }
+.current-img img { width:100%; height:100%; object-fit:cover; }
+@media(max-width:540px) { .form-grid { grid-template-columns:1fr; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="edit-wrap">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px" class="reveal">
+      <h1 class="heading">Edit <span>Product</span></h1>
+      <a href="{% url 'dashboard:products' %}" class="btn btn-outline">← Products</a>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <div class="form-section reveal">
+        <h3>Product Info</h3>
+        <div class="form-grid">
+          <div class="fg">
+            <label>Product Name *</label>
+            <input type="text" name="name" value="{{ product.name }}" required/>
+          </div>
+          <div class="fg">
+            <label>Category *</label>
+            <select name="category" required>
+              {% for cat in categories %}
+                <option value="{{ cat.id }}" {% if cat == product.category %}selected{% endif %}>{{ cat.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="fg">
+            <label>Price (Rs.) *</label>
+            <input type="number" name="price" value="{{ product.price }}" required/>
+          </div>
+          <div class="fg">
+            <label>Sale Price (Rs.)</label>
+            <input type="number" name="sale_price" value="{{ product.sale_price|default:'' }}"/>
+          </div>
+          <div class="fg">
+            <label>Stock *</label>
+            <input type="number" name="stock" value="{{ product.stock }}" required/>
+          </div>
+        </div>
+        <div class="fg">
+          <label>Description *</label>
+          <textarea name="description" required>{{ product.description }}</textarea>
+        </div>
+        <div class="fg">
+          <div class="fg-check">
+            <label><input type="checkbox" name="is_active" {% if product.is_active %}checked{% endif %}/> Active</label>
+            <label><input type="checkbox" name="is_featured" {% if product.is_featured %}checked{% endif %}/> Featured</label>
+            <label><input type="checkbox" name="is_bestseller" {% if product.is_bestseller %}checked{% endif %}/> Best Seller</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section reveal">
+        <h3>Product Image</h3>
+        {% if product.main_image %}
+        <div class="current-img">
+          <img src="{{ product.main_image.image.url }}" alt="Current image"/>
+        </div>
+        <p style="font-size:13px;color:var(--lg);margin-bottom:12px">Current image. Upload new one to replace.</p>
+        {% endif %}
+        <div class="fg">
+          <label>Upload New Image</label>
+          <input type="file" name="image" accept="image/*"/>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;flex-wrap:wrap" class="reveal">
+        <button type="submit" class="btn btn-red">Save Changes ✓</button>
+        <a href="{% url 'dashboard:products' %}" class="btn btn-outline">Cancel</a>
+        <a href="{% url 'products:detail' product.slug %}" class="btn btn-outline" target="_blank">View on Site →</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% block title %}Order Confirmed #{{ order.order_id }} — Drive Drape{% endblock %}
+
+{% block extra_css %}
+<style>
+.confirm-page{padding:60px 0;text-align:center}
+.confirm-icon{font-size:72px;margin-bottom:16px;animation:popIn .5s ease}
+@keyframes popIn{from{transform:scale(0)}to{transform:scale(1)}}
+.confirm-h{font-family:'Orbitron',sans-serif;font-weight:900;font-size:clamp(26px,5vw,44px);color:var(--white);margin-bottom:10px}
+.confirm-h span{color:var(--red)}
+.confirm-sub{font-size:15px;font-weight:300;color:var(--silver);max-width:500px;margin:0 auto 32px}
+.order-id-box{display:inline-block;background:var(--card);border:1px solid var(--red);padding:14px 32px;margin-bottom:40px}
+.oid-label{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--lg);margin-bottom:4px}
+.oid-val{font-family:'Orbitron',sans-serif;font-weight:900;font-size:24px;color:var(--red)}
+
+.confirm-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:800px;margin:0 auto 40px;text-align:left}
+.info-box{background:var(--card);border:1px solid var(--grey);padding:22px;position:relative}
+.info-box::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--red)}
+.info-box h4{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--red);margin-bottom:12px}
+.info-box p{font-size:14px;font-weight:300;color:var(--silver);line-height:1.7}
+.info-box strong{color:var(--white);font-weight:600}
+
+.order-items-list{max-width:800px;margin:0 auto 40px;text-align:left}
+.order-items-list h3{font-family:'Orbitron',sans-serif;font-weight:700;font-size:16px;color:var(--white);margin-bottom:16px}
+.oi-row{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--grey)}
+.oi-img{width:56px;height:56px;background:var(--grey);border:1px solid var(--grey);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.oi-img img{width:100%;height:100%;object-fit:cover}
+.oi-name{font-family:'Orbitron',sans-serif;font-weight:700;font-size:12px;color:var(--white)}
+.oi-qty{font-size:13px;color:var(--lg)}
+.oi-price{font-family:'Orbitron',sans-serif;font-weight:700;font-size:14px;color:var(--white);margin-left:auto}
+
+.confirm-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:40px}
+.wa-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  background:#25d366;color:#fff;
+  padding:14px 28px;
+  font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;letter-spacing:3px;text-transform:uppercase;
+  transition:background .2s;
+  clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);
+}
+.wa-btn:hover{background:#1ebe5d}
+
+@media(max-width:600px){.confirm-grid{grid-template-columns:1fr}}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="confirm-page">
+  <div class="container">
+    <div class="confirm-icon">🎉</div>
+    <h1 class="confirm-h">Order <span>Confirmed!</span></h1>
+    <p class="confirm-sub">
+      Thank you {{ order.full_name }}! Your order has been placed successfully.
+      {% if order.payment_method == 'cod' %}Pay when your order arrives.{% endif %}
+    </p>
+
+    <div class="order-id-box">
+      <div class="oid-label">Your Order ID</div>
+      <div class="oid-val">#{{ order.order_id }}</div>
+    </div>
+
+    <!-- Order Info -->
+    <div class="confirm-grid">
+      <div class="info-box">
+        <h4>Delivery Address</h4>
+        <p>
+          <strong>{{ order.full_name }}</strong><br/>
+          {{ order.phone }}<br/>
+          {{ order.address }}<br/>
+          {{ order.get_city_display }}{% if order.province %}, {{ order.province }}{% endif %}
+        </p>
+      </div>
+      <div class="info-box">
+        <h4>Payment &amp; Total</h4>
+        <p>
+          <strong>{{ order.get_payment_method_display }}</strong><br/>
+          Subtotal: Rs.{{ order.subtotal }}<br/>
+          Shipping: Rs.{{ order.shipping_cost }}<br/>
+          <strong style="color:var(--red)">Total: Rs.{{ order.total }}</strong>
+        </p>
+      </div>
+    </div>
+
+    <!-- Items -->
+    <div class="order-items-list">
+      <h3>Items Ordered</h3>
+      {% for item in order.items.all %}
+      <div class="oi-row">
+        <div class="oi-img">
+          {% if item.product and item.product.main_image %}
+            <img src="{{ item.product.main_image.image.url }}" alt=""/>
+          {% else %}🚗{% endif %}
+        </div>
+        <div>
+          <div class="oi-name">{{ item.product_name }}</div>
+          <div class="oi-qty">Qty: {{ item.quantity }}</div>
+        </div>
+        <div class="oi-price">Rs.{{ item.line_total }}</div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Actions -->
+    <div class="confirm-actions">
+      <a href="{{ whatsapp_link }}" target="_blank" class="wa-btn">
+        💬 Confirm on WhatsApp
+      </a>
+      <a href="{% url 'orders:track' %}?order_id={{ order.order_id }}" class="btn btn-outline">
+        📦 Track My Order
+      </a>
+      <a href="{% url 'products:shop' %}" class="btn btn-red">
+        Continue Shopping →
+      </a>
+    </div>
+
+    <p style="font-size:13px;color:var(--lg);font-family:'Rajdhani',sans-serif;letter-spacing:2px">
+      We'll contact you on <strong style="color:var(--white)">{{ order.phone }}</strong> to confirm delivery details.
+    </p>
+  </div>
+</div>
+{% endblock %}

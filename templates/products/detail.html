@@ -1,0 +1,271 @@
+{% extends 'base.html' %}
+{% block title %}{{ product.name }} — Drive Drape{% endblock %}
+
+{% block extra_css %}
+<style>
+.detail-wrap{padding:48px 0}
+.breadcrumb{display:flex;gap:8px;align-items:center;margin-bottom:32px;font-size:13px;font-weight:300;color:var(--lg)}
+.breadcrumb a{color:var(--lg);transition:color .2s}.breadcrumb a:hover{color:var(--red)}
+.breadcrumb span{color:var(--grey)}
+
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
+
+/* Images */
+.img-main{aspect-ratio:1;background:var(--card);overflow:hidden;border:1px solid var(--grey);display:flex;align-items:center;justify-content:center;font-size:100px}
+.img-main img{width:100%;height:100%;object-fit:cover}
+.img-thumbs{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.thumb{width:70px;height:70px;background:var(--card);border:1px solid var(--grey);overflow:hidden;cursor:pointer;flex-shrink:0;transition:border-color .2s;display:flex;align-items:center;justify-content:center;font-size:24px}
+.thumb:hover,.thumb.active{border-color:var(--red)}
+.thumb img{width:100%;height:100%;object-fit:cover}
+
+/* Info */
+.prod-info{}
+.info-cat{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--red);margin-bottom:8px}
+.info-name{font-family:'Orbitron',sans-serif;font-weight:900;font-size:clamp(22px,3vw,34px);color:var(--white);line-height:1.1;margin-bottom:14px}
+.info-stars{display:flex;align-items:center;gap:8px;margin-bottom:16px}
+.stars{color:#f59e0b;font-size:16px}
+.star-count{font-size:14px;color:var(--lg)}
+.info-price{font-family:'Orbitron',sans-serif;font-weight:900;font-size:32px;color:var(--white);margin-bottom:6px}
+.info-price del{font-size:18px;color:var(--lg);font-family:'Barlow Condensed',sans-serif;margin-left:8px}
+.info-price .badge-sale{background:var(--red);color:#fff;font-size:11px;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:2px;padding:3px 10px;vertical-align:middle;margin-left:8px}
+.info-stock{font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase;margin-bottom:20px;font-family:'Rajdhani',sans-serif}
+.in-stock{color:#22c55e}
+.out-stock{color:var(--red)}
+.info-desc{font-size:15px;font-weight:300;color:var(--silver);line-height:1.8;margin-bottom:24px;border-left:3px solid var(--red);padding-left:16px}
+
+/* Add to cart form */
+.cart-form{display:flex;gap:10px;align-items:center;margin-bottom:20px;flex-wrap:wrap}
+.qty-wrap{display:flex;align-items:center;border:1px solid var(--grey)}
+.qty-btn{width:40px;height:48px;background:var(--card);color:var(--white);font-size:18px;transition:background .2s}
+.qty-btn:hover{background:var(--red)}
+.qty-input{width:56px;height:48px;background:var(--dark);border:none;border-left:1px solid var(--grey);border-right:1px solid var(--grey);color:var(--white);text-align:center;font-family:'Orbitron',sans-serif;font-weight:700;font-size:16px;outline:none}
+.buynow-btn{background:var(--dark);color:var(--red);border:1px solid var(--red);padding:0 24px;height:48px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;letter-spacing:3px;text-transform:uppercase;transition:all .2s}
+.buynow-btn:hover{background:var(--red);color:#fff}
+
+.info-meta{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
+.meta-item{background:var(--card);border:1px solid var(--grey);padding:12px;display:flex;align-items:center;gap:10px}
+.meta-icon{font-size:20px}
+.meta-t{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--red)}
+.meta-d{font-size:13px;font-weight:300;color:var(--silver)}
+
+/* Reviews */
+.reviews-section{padding:60px 0;border-top:1px solid var(--grey)}
+.review-grid{display:grid;grid-template-columns:1fr 2fr;gap:48px;align-items:start}
+.rating-overview{background:var(--card);border:1px solid var(--grey);padding:32px;text-align:center}
+.rating-big{font-family:'Orbitron',sans-serif;font-weight:900;font-size:56px;color:var(--white)}
+.rating-stars{font-size:22px;color:#f59e0b;margin:6px 0}
+.rating-count{font-size:13px;color:var(--lg)}
+.rating-bars{margin-top:20px;display:flex;flex-direction:column;gap:6px}
+.rbar-row{display:flex;align-items:center;gap:8px}
+.rbar-lbl{font-size:12px;color:var(--lg);width:20px;text-align:right}
+.rbar-track{flex:1;height:6px;background:var(--grey);border-radius:2px;overflow:hidden}
+.rbar-fill{height:100%;background:var(--red);border-radius:2px}
+
+.review-list{display:flex;flex-direction:column;gap:16px}
+.review-card{background:var(--card);border:1px solid var(--grey);padding:20px;position:relative}
+.review-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--red)}
+.rv-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:12px;flex-wrap:wrap}
+.rv-name{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:14px;letter-spacing:1px;color:var(--white)}
+.rv-stars{color:#f59e0b;font-size:13px}
+.rv-date{font-size:11px;color:var(--lg)}
+.rv-title{font-weight:600;color:var(--silver);margin-bottom:4px;font-size:14px}
+.rv-body{font-size:14px;font-weight:300;color:var(--lg);line-height:1.6}
+
+/* Add Review Form */
+.review-form{background:var(--card);border:1px solid var(--grey);padding:28px;margin-top:32px}
+.review-form h3{font-family:'Orbitron',sans-serif;font-weight:700;font-size:16px;color:var(--white);margin-bottom:20px}
+.star-picker{display:flex;gap:6px;margin-bottom:16px;flex-direction:row-reverse;justify-content:flex-end}
+.star-picker input{display:none}
+.star-picker label{font-size:28px;cursor:pointer;color:var(--grey);transition:color .1s}
+.star-picker input:checked ~ label,.star-picker label:hover,.star-picker label:hover ~ label{color:#f59e0b}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fg{margin-bottom:12px}
+.fg label{display:block;font-family:'Rajdhani',sans-serif;font-weight:600;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--lg);margin-bottom:6px}
+.fg input,.fg textarea{width:100%;background:var(--dark);border:1px solid var(--grey);color:var(--white);padding:11px 14px;font-family:'Barlow Condensed',sans-serif;font-size:14px;outline:none;transition:border-color .2s}
+.fg input:focus,.fg textarea:focus{border-color:var(--red)}
+.fg textarea{min-height:90px;resize:vertical}
+
+@media(max-width:768px){
+  .detail-grid{grid-template-columns:1fr}
+  .review-grid{grid-template-columns:1fr}
+  .info-meta{grid-template-columns:1fr}
+  .form-row{grid-template-columns:1fr}
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="detail-wrap">
+  <div class="container">
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+      <a href="{% url 'core:home' %}">Home</a><span>/</span>
+      <a href="{% url 'products:shop' %}">Shop</a><span>/</span>
+      <a href="{% url 'products:shop' %}?cat={{ product.category.slug }}">{{ product.category.name }}</a><span>/</span>
+      <span style="color:var(--silver)">{{ product.name }}</span>
+    </div>
+
+    <!-- Main Detail Grid -->
+    <div class="detail-grid">
+      <!-- Images -->
+      <div class="reveal">
+        <div class="img-main" id="mainImg">
+          {% if product.main_image %}
+            <img src="{{ product.main_image.image.url }}" alt="{{ product.name }}" id="mainImgTag"/>
+          {% else %}🚗{% endif %}
+        </div>
+        {% if product.images.count > 1 %}
+        <div class="img-thumbs">
+          {% for img in product.images.all %}
+          <div class="thumb {% if img.is_main %}active{% endif %}" onclick="switchImg('{{ img.image.url }}', this)">
+            <img src="{{ img.image.url }}" alt=""/>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Product Info -->
+      <div class="prod-info reveal reveal-d1">
+        <p class="info-cat">{{ product.category.name }}</p>
+        <h1 class="info-name">{{ product.name }}</h1>
+
+        {% if product.avg_rating > 0 %}
+        <div class="info-stars">
+          <span class="stars">{% for i in "12345" %}{% if forloop.counter <= product.avg_rating %}⭐{% else %}☆{% endif %}{% endfor %}</span>
+          <a href="#reviews" class="star-count">{{ product.avg_rating }} / 5 ({{ product.review_count }} reviews)</a>
+        </div>
+        {% endif %}
+
+        <div class="info-price">
+          Rs.{{ product.current_price }}
+          {% if product.is_on_sale %}
+            <del>Rs.{{ product.price }}</del>
+            <span class="badge-sale">-{{ product.discount_percent }}% OFF</span>
+          {% endif %}
+        </div>
+
+        <p class="info-stock {% if product.in_stock %}in-stock{% else %}out-stock{% endif %}">
+          {% if product.in_stock %}✓ In Stock ({{ product.stock }} left){% else %}✗ Out of Stock{% endif %}
+        </p>
+
+        <p class="info-desc">{{ product.description }}</p>
+
+        {% if product.in_stock %}
+        <form method="POST" action="{% url 'cart:add' product.id %}" class="cart-form">
+          {% csrf_token %}
+          <div class="qty-wrap">
+            <button type="button" class="qty-btn" onclick="changeQty(-1)">−</button>
+            <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}" class="qty-input" id="qtyInput"/>
+            <button type="button" class="qty-btn" onclick="changeQty(1)">+</button>
+          </div>
+          <button type="submit" class="btn btn-red">Add to Cart 🛒</button>
+        </form>
+        <a href="{% url 'orders:checkout' %}?buy_now={{ product.id }}" class="btn btn-outline btn-full" style="margin-bottom:8px">Buy Now — COD Available</a>
+        {% else %}
+          <p class="btn btn-outline btn-full" style="opacity:.5;cursor:not-allowed">Out of Stock</p>
+        {% endif %}
+
+        <div class="info-meta">
+          <div class="meta-item"><span class="meta-icon">🚚</span><div><div class="meta-t">Free Delivery</div><div class="meta-d">Orders above Rs.1500</div></div></div>
+          <div class="meta-item"><span class="meta-icon">💵</span><div><div class="meta-t">Cash on Delivery</div><div class="meta-d">Pay when you receive</div></div></div>
+          <div class="meta-item"><span class="meta-icon">↩️</span><div><div class="meta-t">Easy Returns</div><div class="meta-d">7-day return policy</div></div></div>
+          <div class="meta-item"><span class="meta-icon">📱</span><div><div class="meta-t">WhatsApp Support</div><div class="meta-d">Quick response</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- REVIEWS -->
+<section class="reviews-section" id="reviews">
+  <div class="container">
+    <span class="tag">Customer Feedback</span>
+    <h2 class="heading">Reviews <span>&amp; Ratings</span></h2>
+    <div class="divider"></div>
+
+    <div class="review-grid">
+      <!-- Overview -->
+      <div class="reveal">
+        <div class="rating-overview">
+          <div class="rating-big">{{ product.avg_rating|default:"—" }}</div>
+          <div class="rating-stars">{% for i in "12345" %}{% if forloop.counter <= product.avg_rating %}⭐{% else %}☆{% endif %}{% endfor %}</div>
+          <div class="rating-count">{{ product.review_count }} review{{ product.review_count|pluralize }}</div>
+          <div class="rating-bars">
+            {% for r in rating_breakdown %}
+            <div class="rbar-row">
+              <span class="rbar-lbl">{{ r.star }}</span>
+              <div class="rbar-track"><div class="rbar-fill" style="width:{{ r.percent }}%"></div></div>
+              <span style="font-size:11px;color:var(--lg);width:24px">{{ r.count }}</span>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Reviews list + form -->
+      <div>
+        <div class="review-list">
+          {% for review in reviews %}
+          <div class="review-card reveal">
+            <div class="rv-head">
+              <div>
+                <div class="rv-name">{{ review.reviewer_name }}</div>
+                <div class="rv-stars">{% for i in "12345" %}{% if forloop.counter <= review.rating %}⭐{% else %}☆{% endif %}{% endfor %}</div>
+              </div>
+              <div class="rv-date">{{ review.created_at|date:"d M Y" }}</div>
+            </div>
+            {% if review.title %}<div class="rv-title">{{ review.title }}</div>{% endif %}
+            <div class="rv-body">{{ review.comment }}</div>
+          </div>
+          {% empty %}
+          <p style="color:var(--lg);font-size:15px">No reviews yet. Be the first to review!</p>
+          {% endfor %}
+        </div>
+
+        <!-- Add Review -->
+        <div class="review-form reveal">
+          <h3>Write a Review</h3>
+          <form method="POST" action="{% url 'products:add_review' product.slug %}">
+            {% csrf_token %}
+            <div style="margin-bottom:16px">
+              <p style="font-family:'Rajdhani',sans-serif;font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--lg);margin-bottom:8px">Your Rating *</p>
+              <div class="star-picker">
+                <input type="radio" name="rating" id="s5" value="5"/><label for="s5">★</label>
+                <input type="radio" name="rating" id="s4" value="4"/><label for="s4">★</label>
+                <input type="radio" name="rating" id="s3" value="3" checked/><label for="s3">★</label>
+                <input type="radio" name="rating" id="s2" value="2"/><label for="s2">★</label>
+                <input type="radio" name="rating" id="s1" value="1"/><label for="s1">★</label>
+              </div>
+            </div>
+            {% if not user.is_authenticated %}
+            <div class="form-row">
+              <div class="fg"><label>Your Name *</label><input type="text" name="guest_name" required placeholder="Ahmed Khan"/></div>
+              <div class="fg"><label>Email</label><input type="email" name="guest_email" placeholder="optional"/></div>
+            </div>
+            {% endif %}
+            <div class="fg"><label>Review Title</label><input type="text" name="title" placeholder="Summarize your experience"/></div>
+            <div class="fg"><label>Your Review *</label><textarea name="comment" required placeholder="Tell others about this product…"></textarea></div>
+            <button type="submit" class="btn btn-red">Submit Review</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function changeQty(d) {
+  const el = document.getElementById('qtyInput');
+  const max = parseInt(el.max);
+  el.value = Math.max(1, Math.min(max, parseInt(el.value) + d));
+}
+function switchImg(url, el) {
+  document.getElementById('mainImgTag').src = url;
+  document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+</script>
+{% endblock %}

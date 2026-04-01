@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %}Contact Us — Drive Drape{% endblock %}
+{% block content %}
+<div style="padding:60px 0">
+  <div class="container" style="max-width:600px">
+    <span class="tag">Get In Touch</span>
+    <h1 class="heading">Contact <span>Us</span></h1>
+    <div class="divider"></div>
+    <form method="POST" style="background:var(--card);border:1px solid var(--grey);padding:32px;position:relative;overflow:hidden">
+      <div style="position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--red)"></div>
+      {% csrf_token %}
+      <div style="margin-bottom:16px">
+        <label style="display:block;font-family:'Rajdhani',sans-serif;font-weight:600;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--lg);margin-bottom:6px">Your Name</label>
+        <input type="text" name="name" required style="width:100%;background:var(--dark);border:1px solid var(--grey);color:var(--white);padding:12px 14px;font-family:'Barlow Condensed',sans-serif;font-size:15px;outline:none" placeholder="Ahmed Khan"/>
+      </div>
+      <div style="margin-bottom:16px">
+        <label style="display:block;font-family:'Rajdhani',sans-serif;font-weight:600;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--lg);margin-bottom:6px">Email Address</label>
+        <input type="email" name="email" style="width:100%;background:var(--dark);border:1px solid var(--grey);color:var(--white);padding:12px 14px;font-family:'Barlow Condensed',sans-serif;font-size:15px;outline:none" placeholder="your@email.com"/>
+      </div>
+      <div style="margin-bottom:20px">
+        <label style="display:block;font-family:'Rajdhani',sans-serif;font-weight:600;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--lg);margin-bottom:6px">Message</label>
+        <textarea name="message" required rows="5" style="width:100%;background:var(--dark);border:1px solid var(--grey);color:var(--white);padding:12px 14px;font-family:'Barlow Condensed',sans-serif;font-size:15px;outline:none;resize:vertical" placeholder="How can we help you?"></textarea>
+      </div>
+      <button type="submit" class="btn btn-red btn-full">Send Message →</button>
+    </form>
+
+    <!-- Contact Info Cards -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px">
+      <a href="https://wa.me/923170004122" target="_blank" style="background:var(--card);border:1px solid var(--grey);padding:20px;text-decoration:none;display:flex;align-items:center;gap:12px;transition:border-color .2s" onmouseover="this.style.borderColor='#EC2227'" onmouseout="this.style.borderColor='#2a2a2a'">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="#EC2227">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+              <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.116 1.522 5.847L.057 23.882a.5.5 0 0 0 .61.61l6.035-1.465A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.891 0-3.66-.523-5.17-1.432l-.37-.22-3.833.931.947-3.833-.241-.393A9.956 9.956 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/>
+            </svg>
+        <div>
+          <div style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--red)">WhatsApp</div>
+          <div style="font-size:14px;font-weight:300;color:var(--silver)">0317-0004122</div>
+        </div>
+      </a>
+      <a href="https://www.instagram.com/drivedrape?igsh=ZHJidDNhMWU1MzI4" target="_blank" style="background:var(--card);border:1px solid var(--grey);padding:20px;text-decoration:none;display:flex;align-items:center;gap:12px;transition:border-color .2s" onmouseover="this.style.borderColor='#EC2227'" onmouseout="this.style.borderColor='#2a2a2a'">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#EC2227" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+              <circle cx="12" cy="12" r="4"/>
+              <circle cx="17.5" cy="6.5" r="1" fill="#EC2227" stroke="none"/>
+            </svg>
+        <div>
+          <div style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--red)">Instagram</div>
+          <div style="font-size:14px;font-weight:300;color:var(--silver)">@drivedrape</div>
+        </div>
+      </a>
+    </div>
+
+    <!-- Extra Info -->
+    <div style="background:var(--card);border:1px solid var(--grey);padding:20px;margin-top:16px;border-left:3px solid var(--red)">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div>
+          <div style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--red);margin-bottom:4px">Delivery</div>
+          <div style="font-size:14px;font-weight:300;color:var(--silver)">Nationwide — 48 Hour Express</div>
+        </div>
+        <div>
+          <div style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--red);margin-bottom:4px">Support Hours</div>
+          <div style="font-size:14px;font-weight:300;color:var(--silver)">Mon – Sat, 10am – 8pm</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

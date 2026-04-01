@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% block title %}Your Cart — Drive Drape{% endblock %}
+
+{% block extra_css %}
+<style>
+.cart-page{padding:48px 0}
+.cart-grid{display:grid;grid-template-columns:1fr 340px;gap:32px;align-items:start}
+.cart-title{font-family:'Orbitron',sans-serif;font-weight:900;font-size:28px;color:var(--white);margin-bottom:32px}
+.cart-title span{color:var(--red)}
+
+.cart-table{width:100%;border-collapse:collapse}
+.cart-table th{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--lg);padding:0 0 12px;border-bottom:1px solid var(--grey);text-align:left}
+.cart-table th:last-child{text-align:right}
+.cart-row{border-bottom:1px solid var(--grey)}
+.cart-row td{padding:20px 0;vertical-align:middle}
+
+.cart-prod{display:flex;gap:16px;align-items:center}
+.cart-img{width:72px;height:72px;background:var(--card);border:1px solid var(--grey);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0}
+.cart-img img{width:100%;height:100%;object-fit:cover}
+.cart-pname{font-family:'Orbitron',sans-serif;font-weight:700;font-size:13px;color:var(--white);margin-bottom:4px}
+.cart-pcat{font-family:'Rajdhani',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--red)}
+
+.cart-price{font-family:'Orbitron',sans-serif;font-weight:700;font-size:15px;color:var(--white)}
+
+.qty-ctrl{display:flex;align-items:center;border:1px solid var(--grey)}
+.qc-btn{width:32px;height:36px;background:var(--card);color:var(--white);font-size:14px;transition:background .2s}
+.qc-btn:hover{background:var(--red)}
+.qc-val{width:44px;height:36px;background:var(--dark);border:none;border-left:1px solid var(--grey);border-right:1px solid var(--grey);color:var(--white);text-align:center;font-family:'Orbitron',sans-serif;font-weight:700;font-size:14px;outline:none}
+
+.cart-remove{color:var(--lg);font-size:18px;background:none;border:none;cursor:pointer;transition:color .2s;float:right}
+.cart-remove:hover{color:var(--red)}
+
+.cart-total-col{text-align:right;font-family:'Orbitron',sans-serif;font-weight:700;font-size:15px;color:var(--white)}
+
+/* Order Summary */
+.order-summary{background:var(--card);border:1px solid var(--grey);padding:28px;position:sticky;top:90px}
+.order-summary h3{font-family:'Orbitron',sans-serif;font-weight:700;font-size:16px;color:var(--white);margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--grey)}
+.summary-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.summary-row:last-of-type{border-bottom:none}
+.summary-label{font-size:14px;font-weight:300;color:var(--silver)}
+.summary-val{font-family:'Orbitron',sans-serif;font-weight:700;font-size:14px;color:var(--white)}
+.summary-total{margin-top:12px;padding-top:16px;border-top:1px solid var(--grey)}
+.summary-total .summary-label{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;letter-spacing:3px;text-transform:uppercase;color:var(--white)}
+.summary-total .summary-val{font-size:22px;color:var(--red)}
+.coupon-row{display:flex;gap:0;margin:16px 0}
+.coupon-row input{flex:1;background:var(--dark);border:1px solid var(--grey);border-right:none;color:var(--white);padding:10px 14px;font-family:'Barlow Condensed',sans-serif;font-size:14px;outline:none}
+.coupon-row input:focus{border-color:var(--red)}
+.coupon-row button{background:var(--grey);color:var(--white);padding:10px 16px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:11px;letter-spacing:2px;transition:background .2s}
+.coupon-row button:hover{background:var(--red)}
+
+.empty-cart{text-align:center;padding:80px 0}
+.empty-icon{font-size:80px;opacity:.15;margin-bottom:20px}
+.empty-cart h2{font-family:'Orbitron',sans-serif;font-weight:700;font-size:22px;color:var(--white);margin-bottom:10px}
+.empty-cart p{font-size:15px;color:var(--lg);margin-bottom:28px}
+
+@media(max-width:900px){.cart-grid{grid-template-columns:1fr}}
+@media(max-width:600px){
+  .cart-table thead{display:none}
+  .cart-row td{display:block;padding:8px 0}
+  .cart-row td::before{content:attr(data-label)' ';font-family:'Rajdhani',sans-serif;font-weight:700;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--red);display:block;margin-bottom:4px}
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="cart-page">
+  <div class="container">
+
+    {% if cart_items %}
+    <div class="cart-grid">
+
+      <!-- CART ITEMS -->
+      <div>
+        <h1 class="cart-title">Your <span>Cart</span></h1>
+        <table class="cart-table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Price</th>
+              <th>Quantity</th>
+              <th>Total</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in cart_items %}
+            <tr class="cart-row">
+              <td data-label="Product">
+                <div class="cart-prod">
+                  <div class="cart-img">
+                    {% if item.product.main_image %}
+                      <img src="{{ item.product.main_image.image.url }}" alt="{{ item.product.name }}"/>
+                    {% else %}🚗{% endif %}
+                  </div>
+                  <div>
+                    <a href="{% url 'products:detail' item.product.slug %}">
+                      <div class="cart-pname">{{ item.product.name }}</div>
+                    </a>
+                    <div class="cart-pcat">{{ item.product.category.name }}</div>
+                  </div>
+                </div>
+              </td>
+              <td data-label="Price"><span class="cart-price">Rs.{{ item.price }}</span></td>
+              <td data-label="Quantity">
+                <form method="POST" action="{% url 'cart:update' item.product.id %}">
+                  {% csrf_token %}
+                  <div class="qty-ctrl">
+                    <button type="button" class="qc-btn" onclick="this.nextElementSibling.value=Math.max(1,parseInt(this.nextElementSibling.value)-1);this.closest('form').submit()">−</button>
+                    <input type="number" name="quantity" value="{{ item.quantity }}" min="1" class="qc-val" onchange="this.closest('form').submit()"/>
+                    <button type="button" class="qc-btn" onclick="this.previousElementSibling.value=parseInt(this.previousElementSibling.value)+1;this.closest('form').submit()">+</button>
+                  </div>
+                </form>
+              </td>
+              <td data-label="Total"><span class="cart-total-col">Rs.{{ item.total_price|floatformat:0 }}</span></td>
+              <td>
+                <form method="POST" action="{% url 'cart:remove' item.product.id %}">
+                  {% csrf_token %}
+                  <button type="submit" class="cart-remove" title="Remove">✕</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap">
+          <a href="{% url 'products:shop' %}" class="btn btn-outline">← Continue Shopping</a>
+          <form method="POST" action="{% url 'cart:clear' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline" style="border-color:var(--red);color:var(--red)">Clear Cart</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- ORDER SUMMARY -->
+      <div class="order-summary reveal">
+        <h3>Order Summary</h3>
+        <div class="summary-row"><span class="summary-label">Subtotal</span><span class="summary-val">Rs.{{ cart_subtotal|floatformat:0 }}</span></div>
+        <div class="summary-row"><span class="summary-label">Shipping</span><span class="summary-val">Rs.200</span></div>
+        <div class="summary-row"><span class="summary-label">COD Available</span><span class="summary-val" style="color:#22c55e">✓</span></div>
+        <div class="coupon-row">
+          <input type="text" placeholder="Promo code…"/>
+          <button>Apply</button>
+        </div>
+        <div class="summary-total summary-row">
+          <span class="summary-label">Total</span>
+          <span class="summary-val">Rs.{{ cart_total|floatformat:0 }}</span>
+        </div>
+        <a href="{% url 'orders:checkout' %}" class="btn btn-red btn-full" style="margin-top:20px">Proceed to Checkout →</a>
+        <div style="margin-top:16px;text-align:center;font-size:12px;color:var(--lg);font-family:'Rajdhani',sans-serif;letter-spacing:2px;text-transform:uppercase">
+          🔒 Secure Checkout &nbsp;|&nbsp; 💵 COD Available
+        </div>
+      </div>
+
+    </div>
+
+    {% else %}
+    <!-- EMPTY CART -->
+    <div class="empty-cart">
+      <div class="empty-icon">🛒</div>
+      <h2>Your Cart is Empty</h2>
+      <p>Looks like you haven't added anything yet.</p>
+      <a href="{% url 'products:shop' %}" class="btn btn-red">Start Shopping →</a>
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}
